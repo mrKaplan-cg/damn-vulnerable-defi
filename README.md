@@ -11,6 +11,43 @@ Use Damn Vulnerable DeFi to:
 - Benchmark smart contract security tooling.
 - Create educational content on smart contract security with articles, tutorials, talks, courses, workshops, trainings, CTFs, etc. 
 
+## Challenges
+[x] Unstoppable
+
+[] Naive receiver
+
+[x] Truster
+
+[x] Side Entrance
+
+[x] The rewarder
+
+[x] Selfie
+
+[x] Compromised
+
+[x] Puppet
+
+[] Puppet V2
+
+[] Free Rider
+
+[] Backdoor
+
+[] Climber
+
+[] Wallet mining
+
+[] Puppet V3
+
+[] ABI smuggling
+
+[] Shards
+
+[] Curvy puppet
+
+[] Withdrawal
+
 ## Install
 
 1. Clone the repository.
