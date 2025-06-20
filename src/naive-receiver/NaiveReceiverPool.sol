@@ -89,5 +89,5 @@ contract NaiveReceiverPool is Multicall, IERC3156FlashLender {
         } else {
             return super._msgSender();
         }
-    }
+    } 
 }

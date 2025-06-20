@@ -7,3 +7,7 @@ To claim rewards, users must prove they're included in the chosen set of benefic
 Alice has claimed her rewards already. You can claim yours too! But you've realized there's a critical vulnerability in the contract.
 
 Save as much funds as you can from the distributor. Transfer all recovered assets to the designated recovery account.
+
+## Solution
+
+I can execute repetaed claims structs with the same data in the same transaction, then I can drain the whole contract.

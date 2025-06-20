@@ -31,6 +31,6 @@ contract TrusterLenderPool is ReentrancyGuard {
             revert RepayFailed();
         }
 
-        return true;
+        return true; 
     }
 }

